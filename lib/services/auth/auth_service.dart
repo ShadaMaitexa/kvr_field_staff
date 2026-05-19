@@ -18,4 +18,18 @@ class AuthService {
   }
 
   User? get currentUser => supabase.auth.currentUser;
+
+  Future<Map<String, dynamic>?> getCurrentUserData() async {
+    final user = currentUser;
+
+    if (user == null) return null;
+
+    final response = await supabase
+        .from('users')
+        .select()
+        .eq('id', user.id)
+        .single();
+
+    return response;
+  }
 }
