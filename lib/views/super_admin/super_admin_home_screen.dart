@@ -4,8 +4,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 
-class AdminHomeScreen extends ConsumerWidget {
-  const AdminHomeScreen({super.key});
+class SuperAdminHomeScreen extends ConsumerWidget {
+  const SuperAdminHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -14,7 +14,7 @@ class AdminHomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin Home'),
+        title: const Text('Super Admin Home'),
         backgroundColor: AppColors.navy,
         foregroundColor: Colors.white,
         actions: [
@@ -31,7 +31,7 @@ class AdminHomeScreen extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Welcome, ${user?.name ?? "Admin"}!',
+              'Welcome, ${user?.name ?? "Super Admin"}!',
               style: AppTextStyles.titleMedium,
             ),
             const SizedBox(height: 10),
@@ -40,7 +40,7 @@ class AdminHomeScreen extends ConsumerWidget {
               style: AppTextStyles.bodyMedium,
             ),
             const SizedBox(height: 20),
-            const Text('Admin features coming soon...'),
+            const Text('Super Admin features coming soon...'),
           ],
         ),
       ),

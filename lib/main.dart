@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/constants/supabase_constants.dart';
+import 'routes/app_router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,22 +20,17 @@ Future<void> main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'KVR Field Staff',
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('KVR Motors'),
-        ),
-        body: const Center(
-          child: Text('Supabase Connected'),
-        ),
-      ),
+      routerConfig: router,
     );
   }
 }

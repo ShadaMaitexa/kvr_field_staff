@@ -1,30 +1,46 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:kvr_field_staff/main.dart';
+import 'package:kvr_field_staff/models/user_model.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('UserModel Tests', () {
+    test('UserModel.fromMap maps correctly', () {
+      final map = {
+        'id': 'user-123',
+        'name': 'John Doe',
+        'email': 'john@example.com',
+        'role': 'staff',
+        'company_id': 'company-456',
+        'status': 'active',
+      };
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+      final user = UserModel.fromMap(map);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+      expect(user.id, 'user-123');
+      expect(user.name, 'John Doe');
+      expect(user.email, 'john@example.com');
+      expect(user.role, 'staff');
+      expect(user.companyId, 'company-456');
+      expect(user.status, 'active');
+    });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    test('UserModel.toMap maps correctly', () {
+      final user = UserModel(
+        id: 'user-123',
+        name: 'John Doe',
+        email: 'john@example.com',
+        role: 'staff',
+        companyId: 'company-456',
+        status: 'active',
+      );
+
+      final map = user.toMap();
+
+      expect(map['id'], 'user-123');
+      expect(map['name'], 'John Doe');
+      expect(map['email'], 'john@example.com');
+      expect(map['role'], 'staff');
+      expect(map['company_id'], 'company-456');
+      expect(map['status'], 'active');
+    });
   });
 }
