@@ -4,20 +4,26 @@ import 'package:go_router/go_router.dart';
 import '../viewmodels/auth_viewmodel.dart';
 import '../views/auth/login_screen.dart';
 import '../views/staff/staff_home_screen.dart';
+import '../views/staff/mark_visit_screen.dart';
+import '../views/staff/visit_confirmed_screen.dart';
 import '../views/admin/admin_home_screen.dart';
+
 import '../views/super_admin/super_admin_home_screen.dart';
+import '../views/splash_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authViewModelProvider);
 
   return GoRouter(
-    initialLocation: '/login',
+    initialLocation: '/splash',
     refreshListenable: _RiverpodRouterRefreshListenable(ref),
     redirect: (context, state) {
       final isInitialized = authState.isInitialized;
+      final isSplash = state.matchedLocation == '/splash';
+
       if (!isInitialized) {
         // Wait for auth initialization to complete (session checking)
-        return null;
+        return isSplash ? null : '/splash';
       }
 
       final isAuthenticated = authState.isAuthenticated;
@@ -28,8 +34,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         return isLoggingIn ? null : '/login';
       }
 
-      // If authenticated and on login screen, redirect to role-based home screen
-      if (isLoggingIn) {
+      // If authenticated and on login screen or splash, redirect to role-based home screen
+      if (isLoggingIn || isSplash) {
         final role = authState.userModel?.role;
         return _getDefaultRouteForRole(role);
       }
@@ -52,12 +58,26 @@ final routerProvider = Provider<GoRouter>((ref) {
     },
     routes: [
       GoRoute(
+        path: '/splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
         path: '/staff',
         builder: (context, state) => const StaffHomeScreen(),
+        routes: [
+          GoRoute(
+            path: 'mark-visit',
+            builder: (context, state) => const MarkVisitScreen(),
+          ),
+          GoRoute(
+            path: 'visit-confirmed',
+            builder: (context, state) => const VisitConfirmedScreen(),
+          ),
+        ],
       ),
       GoRoute(
         path: '/admin',
