@@ -7,8 +7,18 @@ import '../views/staff/staff_home_screen.dart';
 import '../views/staff/mark_visit_screen.dart';
 import '../views/staff/visit_confirmed_screen.dart';
 import '../views/admin/admin_home_screen.dart';
+import '../views/admin/visit_log_screen.dart';
+import '../views/admin/visit_detail_screen.dart';
+import '../views/admin/task_management_screen.dart';
+import '../views/admin/assign_task_screen.dart';
+import '../views/admin/staff_management_screen.dart';
+import '../views/admin/add_staff_screen.dart';
 
 import '../views/super_admin/super_admin_home_screen.dart';
+import '../views/super_admin/add_company_screen.dart';
+import '../views/super_admin/company_detail_screen.dart';
+import '../views/super_admin/add_admin_screen.dart';
+import '../views/super_admin/global_visit_view_screen.dart';
 import '../views/splash_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -82,10 +92,54 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/admin',
         builder: (context, state) => const AdminHomeScreen(),
+        routes: [
+          GoRoute(
+            path: 'visit-log',
+            builder: (context, state) => const VisitLogScreen(),
+          ),
+          GoRoute(
+            path: 'visit-detail',
+            builder: (context, state) => const VisitDetailScreen(),
+          ),
+          GoRoute(
+            path: 'tasks',
+            builder: (context, state) => const TaskManagementScreen(),
+          ),
+          GoRoute(
+            path: 'assign-task',
+            builder: (context, state) => const AssignTaskScreen(),
+          ),
+          GoRoute(
+            path: 'staff',
+            builder: (context, state) => const StaffManagementScreen(),
+          ),
+          GoRoute(
+            path: 'add-staff',
+            builder: (context, state) => const AddStaffScreen(),
+          ),
+        ],
       ),
       GoRoute(
         path: '/super-admin',
         builder: (context, state) => const SuperAdminHomeScreen(),
+        routes: [
+          GoRoute(
+            path: 'add-company',
+            builder: (context, state) => const AddCompanyScreen(),
+          ),
+          GoRoute(
+            path: 'company-detail',
+            builder: (context, state) => const CompanyDetailScreen(),
+          ),
+          GoRoute(
+            path: 'add-admin',
+            builder: (context, state) => const AddAdminScreen(),
+          ),
+          GoRoute(
+            path: 'global-visits',
+            builder: (context, state) => const GlobalVisitViewScreen(),
+          ),
+        ],
       ),
     ],
   );
