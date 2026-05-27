@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../core/theme/app_spacing.dart';
+import '../core/theme/app_spacing.dart';
 
-class ListSkeletonPlaceholder extends StatelessWidget {
-  const ListSkeletonPlaceholder({super.key});
+/// Shimmer loading placeholder for list screens.
+/// Can be referenced as ShimmerLoading throughout the app.
+class ShimmerLoading extends StatelessWidget {
+  const ShimmerLoading({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -60,4 +62,3 @@ class ListSkeletonPlaceholder extends StatelessWidget {
     );
   }
 }
-

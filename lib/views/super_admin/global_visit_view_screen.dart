@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../viewmodels/super_admin_viewmodel.dart';
 import '../../widgets/base_app_bar.dart';
+import '../../widgets/empty_state.dart';
+import '../../widgets/shimmer_loading.dart';
 
-class GlobalVisitViewScreen extends StatelessWidget {
+class GlobalVisitViewScreen extends ConsumerWidget {
   const GlobalVisitViewScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final saState = ref.watch(superAdminViewModelProvider);
+    final visits = saState.globalVisits;
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const BaseAppBar(
-        title: 'Global Visits',
-        
-      ),
+      appBar: const BaseAppBar(title: 'Global Visits'),
       body: Column(
         children: [
           Container(
@@ -27,8 +32,11 @@ class GlobalVisitViewScreen extends StatelessWidget {
                   FilterChip(
                     label: const Text('Today'),
                     selected: true,
-                    onSelected: (_) {},
-                    selectedColor: AppColors.teal.withValues(alpha: 0.2),
+                    onSelected: (_) => ref
+                        .read(superAdminViewModelProvider.notifier)
+                        .loadGlobalVisits(),
+                    selectedColor:
+                        AppColors.teal.withValues(alpha: 0.2),
                     checkmarkColor: AppColors.teal,
                     labelStyle: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.teal,
@@ -54,59 +62,86 @@ class GlobalVisitViewScreen extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              itemCount: 10,
-              separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.sm),
-              itemBuilder: (context, index) {
-                return Card(
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.sm),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: AppColors.navy.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                          ),
-                          child: const Icon(Icons.place, color: AppColors.teal),
-                        ),
-                        const SizedBox(width: AppSpacing.md),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Global Motors',
-                                style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600, color: AppColors.navy),
+            child: saState.isLoading
+                ? const ShimmerLoading()
+                : visits.isEmpty
+                    ? const EmptyState(
+                        icon: Icons.public_off,
+                        title: 'No visits found',
+                        subtitle: 'Visit data will appear here.',
+                      )
+                    : ListView.separated(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        itemCount: visits.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: AppSpacing.sm),
+                        itemBuilder: (context, index) {
+                          final visit = visits[index];
+                          final timeStr = DateFormat('hh:mm a • dd MMM yyyy')
+                              .format(visit.createdAt);
+                          return Card(
+                            elevation: 1,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  AppSpacing.radiusMd),
+                            ),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.all(AppSpacing.sm),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.navy
+                                          .withValues(alpha: 0.1),
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                              AppSpacing.radiusSm),
+                                    ),
+                                    child: const Icon(Icons.place,
+                                        color: AppColors.teal),
+                                  ),
+                                  const SizedBox(width: AppSpacing.md),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          visit.locationName,
+                                          style: AppTextStyles
+                                              .bodyMedium
+                                              .copyWith(
+                                                  fontWeight:
+                                                      FontWeight.w600,
+                                                  color:
+                                                      AppColors.navy),
+                                        ),
+                                        Text(
+                                          'Staff: ${visit.staffId.substring(0, 8)}...',
+                                          style:
+                                              AppTextStyles.bodySmall,
+                                        ),
+                                        Text(
+                                          timeStr,
+                                          style: AppTextStyles.bodySmall
+                                              .copyWith(
+                                                  color: Colors.grey),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                'Staff: John Doe',
-                                style: AppTextStyles.bodySmall,
-                              ),
-                              Text(
-                                '10:30 AM • 26 May 2026',
-                                style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
+                            ),
+                          );
+                        },
+                      ),
           ),
         ],
       ),
     );
   }
 }
-

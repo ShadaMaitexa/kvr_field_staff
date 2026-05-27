@@ -4,10 +4,12 @@ import '../core/theme/app_text_styles.dart';
 
 class AdminBottomNavBar extends StatelessWidget {
   final int currentIndex;
+  final ValueChanged<int>? onTap;
 
   const AdminBottomNavBar({
     super.key,
     required this.currentIndex,
+    this.onTap,
   });
 
   @override
@@ -18,7 +20,8 @@ class AdminBottomNavBar extends StatelessWidget {
       backgroundColor: Colors.white,
       selectedItemColor: AppColors.teal,
       unselectedItemColor: AppColors.navy.withValues(alpha: 0.5),
-      selectedLabelStyle: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.w600),
+      selectedLabelStyle:
+          AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.w600),
       unselectedLabelStyle: AppTextStyles.bodySmall,
       items: const [
         BottomNavigationBarItem(
@@ -42,7 +45,7 @@ class AdminBottomNavBar extends StatelessWidget {
           label: 'Staff',
         ),
       ],
-      onTap: (_) {}, // Static for now
+      onTap: onTap,
     );
   }
 }

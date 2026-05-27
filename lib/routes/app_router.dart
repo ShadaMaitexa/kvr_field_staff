@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../models/company_model.dart';
+import '../models/task_model.dart';
+import '../models/visit_model.dart';
 import '../viewmodels/auth_viewmodel.dart';
 import '../views/auth/login_screen.dart';
 import '../views/staff/staff_home_screen.dart';
 import '../views/staff/mark_visit_screen.dart';
 import '../views/staff/visit_confirmed_screen.dart';
+import '../views/staff/visit_history_screen.dart';
+import '../views/staff/task_list_screen.dart';
+import '../views/staff/task_detail_screen.dart';
 import '../views/admin/admin_home_screen.dart';
 import '../views/admin/visit_log_screen.dart';
 import '../views/admin/visit_detail_screen.dart';
@@ -87,6 +93,19 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: 'visit-confirmed',
             builder: (context, state) => const VisitConfirmedScreen(),
           ),
+          GoRoute(
+            path: 'visit-history',
+            builder: (context, state) => const VisitHistoryScreen(),
+          ),
+          GoRoute(
+            path: 'tasks',
+            builder: (context, state) => const TaskListScreen(),
+          ),
+          GoRoute(
+            path: 'task-detail',
+            builder: (context, state) =>
+                TaskDetailScreen(task: state.extra as TaskModel?),
+          ),
         ],
       ),
       GoRoute(
@@ -99,7 +118,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: 'visit-detail',
-            builder: (context, state) => const VisitDetailScreen(),
+            builder: (context, state) =>
+                VisitDetailScreen(visit: state.extra as VisitModel?),
           ),
           GoRoute(
             path: 'tasks',
@@ -129,11 +149,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: 'company-detail',
-            builder: (context, state) => const CompanyDetailScreen(),
+            builder: (context, state) =>
+                CompanyDetailScreen(company: state.extra as CompanyModel?),
           ),
           GoRoute(
             path: 'add-admin',
-            builder: (context, state) => const AddAdminScreen(),
+            builder: (context, state) =>
+                AddAdminScreen(company: state.extra as CompanyModel?),
           ),
           GoRoute(
             path: 'global-visits',

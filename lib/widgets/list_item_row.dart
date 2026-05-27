@@ -9,6 +9,7 @@ class ListItemRow extends StatelessWidget {
   final String? avatarUrl;
   final String? avatarInitials;
   final Widget? trailingBadge;
+  final VoidCallback? onTap;
 
   const ListItemRow({
     super.key,
@@ -17,6 +18,7 @@ class ListItemRow extends StatelessWidget {
     this.avatarUrl,
     this.avatarInitials,
     this.trailingBadge,
+    this.onTap,
   });
 
   @override
@@ -43,6 +45,7 @@ class ListItemRow extends StatelessWidget {
       title: Text(title, style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600)),
       subtitle: Text(subtitle, style: AppTextStyles.bodySmall),
       trailing: trailingBadge,
+      onTap: onTap,
     );
   }
 }
