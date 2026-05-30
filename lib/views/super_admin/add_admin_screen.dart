@@ -84,7 +84,7 @@ class _AddAdminScreenState extends ConsumerState<AddAdminScreen> {
             ),
             const SizedBox(height: AppSpacing.md),
             DropdownButtonFormField<String>(
-              value: _selectedCompanyId,
+              initialValue: _selectedCompanyId,
               decoration: InputDecoration(
                 labelText: 'Assign to Company',
                 labelStyle: AppTextStyles.bodyMedium,

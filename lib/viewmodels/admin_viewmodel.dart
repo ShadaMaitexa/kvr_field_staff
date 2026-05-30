@@ -90,7 +90,7 @@ class AdminViewModel extends StateNotifier<AdminState> {
       final results = await Future.wait([
         _visitService.getVisits(companyId: _companyId),
         _taskService.getTasks(companyId: _companyId),
-        _userService.getStaffByCompany(_companyId!),
+        _userService.getStaffByCompany(_companyId),
       ]);
 
       final visits = results[0] as List<VisitModel>;
@@ -159,7 +159,7 @@ class AdminViewModel extends StateNotifier<AdminState> {
         password: 'TempPass123!', // Default password — user should reset
         name: name,
         role: 'staff',
-        companyId: _companyId!,
+        companyId: _companyId,
         phone: phone,
       );
       await loadDashboardData();

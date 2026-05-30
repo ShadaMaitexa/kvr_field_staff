@@ -76,7 +76,7 @@ class _AssignTaskScreenState extends ConsumerState<AssignTaskScreen> {
             ),
             const SizedBox(height: AppSpacing.md),
             DropdownButtonFormField<String>(
-              value: _selectedAssigneeId,
+              initialValue: _selectedAssigneeId,
               decoration: InputDecoration(
                 labelText: 'Assign To',
                 labelStyle: AppTextStyles.bodyMedium,

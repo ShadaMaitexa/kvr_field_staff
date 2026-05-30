@@ -194,7 +194,7 @@ class StaffNotifier extends StateNotifier<StaffState> {
       String? photoUrl;
       if (state.capturedImage != null) {
         photoUrl =
-            await _storageService.uploadVisitPhoto(state.capturedImage!, _staffId!);
+            await _storageService.uploadVisitPhoto(state.capturedImage!, _staffId);
       }
 
       final visitId = const Uuid().v4();
@@ -230,7 +230,7 @@ class StaffNotifier extends StateNotifier<StaffState> {
 
       final savedVisit = VisitModel(
         id: visitId,
-        staffId: _staffId!,
+        staffId: _staffId,
         companyId: _companyId,
         locationName: visitData['location_name'] as String,
         latitude: state.currentPosition!.latitude,
