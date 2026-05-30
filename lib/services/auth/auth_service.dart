@@ -28,7 +28,7 @@ class AuthService {
         .from('users')
         .select()
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
     return response;
   }
