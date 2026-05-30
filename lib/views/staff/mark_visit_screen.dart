@@ -16,6 +16,7 @@ class MarkVisitScreen extends ConsumerStatefulWidget {
 }
 
 class _MarkVisitScreenState extends ConsumerState<MarkVisitScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _locationController = TextEditingController();
   final _notesController = TextEditingController();
 
@@ -36,11 +37,13 @@ class _MarkVisitScreenState extends ConsumerState<MarkVisitScreen> {
       backgroundColor: AppColors.background,
       appBar: const BaseAppBar(title: 'Mark Visit'),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
               // GPS Status Card
               Card(
                 color: hasLocation
@@ -109,7 +112,7 @@ class _MarkVisitScreenState extends ConsumerState<MarkVisitScreen> {
               // Location Name
               Text('Location Name', style: AppTextStyles.titleMedium),
               const SizedBox(height: AppSpacing.sm),
-              TextField(
+              TextFormField(
                 controller: _locationController,
                 decoration: InputDecoration(
                   hintText: 'e.g. Global Motors, Ernakulam',
@@ -133,6 +136,12 @@ class _MarkVisitScreenState extends ConsumerState<MarkVisitScreen> {
                         const BorderSide(color: AppColors.teal, width: 2),
                   ),
                 ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Please enter a location name';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: AppSpacing.xl),
 
@@ -208,7 +217,7 @@ class _MarkVisitScreenState extends ConsumerState<MarkVisitScreen> {
               // Notes Field
               Text('Visit Notes (Optional)', style: AppTextStyles.titleMedium),
               const SizedBox(height: AppSpacing.sm),
-              TextField(
+              TextFormField(
                 controller: _notesController,
                 maxLines: 3,
                 decoration: InputDecoration(
@@ -251,23 +260,32 @@ class _MarkVisitScreenState extends ConsumerState<MarkVisitScreen> {
                 label: staffState.isSavingVisit
                     ? 'Saving...'
                     : 'Confirm & Save Visit',
-                onPressed: (hasLocation && !staffState.isSavingVisit)
-                    ? () async {
-                        final success = await ref
-                            .read(staffViewModelProvider.notifier)
-                            .saveVisit(
-                              _locationController.text.trim(),
-                              _notesController.text.trim(),
-                            );
-                        if (success && context.mounted) {
-                          context.go('/staff/visit-confirmed');
+                onPressed: staffState.isSavingVisit
+                    ? null
+                    : () async {
+                        if (!hasLocation) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Wait for GPS connection')),
+                          );
+                          return;
                         }
-                      }
-                    : null,
+                        if (_formKey.currentState!.validate()) {
+                          final success = await ref
+                              .read(staffViewModelProvider.notifier)
+                              .saveVisit(
+                                _locationController.text.trim(),
+                                _notesController.text.trim(),
+                              );
+                          if (success && context.mounted) {
+                            context.go('/staff/visit-confirmed');
+                          }
+                        }
+                      },
               ),
             ],
           ),
         ),
+      ),
       ),
     );
   }

@@ -16,6 +16,7 @@ class AssignTaskScreen extends ConsumerStatefulWidget {
 }
 
 class _AssignTaskScreenState extends ConsumerState<AssignTaskScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   String? _selectedAssigneeId;
@@ -37,13 +38,15 @@ class _AssignTaskScreenState extends ConsumerState<AssignTaskScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const BaseAppBar(title: 'Assign Task'),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              controller: _titleController,
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                controller: _titleController,
               decoration: InputDecoration(
                 labelText: 'Task Title',
                 labelStyle: AppTextStyles.bodyMedium,
@@ -56,9 +59,15 @@ class _AssignTaskScreenState extends ConsumerState<AssignTaskScreen> {
                       const BorderSide(color: AppColors.teal, width: 2),
                 ),
               ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Please enter a task title';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: AppSpacing.md),
-            TextField(
+            TextFormField(
               controller: _descriptionController,
               maxLines: 3,
               decoration: InputDecoration(
@@ -73,6 +82,12 @@ class _AssignTaskScreenState extends ConsumerState<AssignTaskScreen> {
                       const BorderSide(color: AppColors.teal, width: 2),
                 ),
               ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Please enter a description';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: AppSpacing.md),
             DropdownButtonFormField<String>(
@@ -84,6 +99,12 @@ class _AssignTaskScreenState extends ConsumerState<AssignTaskScreen> {
                   borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                 ),
               ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select an assignee';
+                }
+                return null;
+              },
               items: staff
                   .map((s) => DropdownMenuItem(
                         value: s.id,
@@ -94,7 +115,7 @@ class _AssignTaskScreenState extends ConsumerState<AssignTaskScreen> {
                   setState(() => _selectedAssigneeId = value),
             ),
             const SizedBox(height: AppSpacing.md),
-            TextField(
+            TextFormField(
               readOnly: true,
               decoration: InputDecoration(
                 labelText: _selectedDate == null
@@ -118,37 +139,43 @@ class _AssignTaskScreenState extends ConsumerState<AssignTaskScreen> {
                   setState(() => _selectedDate = picked);
                 }
               },
+              validator: (value) {
+                if (_selectedDate == null) {
+                  return 'Please select a due date';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: AppSpacing.xl),
             PrimaryButton(
               label: _isSaving ? 'Assigning...' : 'Assign Task',
-              onPressed: (_titleController.text.trim().isNotEmpty &&
-                      _selectedAssigneeId != null &&
-                      _selectedDate != null &&
-                      !_isSaving)
-                  ? () async {
-                      setState(() => _isSaving = true);
-                      await ref
-                          .read(adminViewModelProvider.notifier)
-                          .assignTask(
-                            title: _titleController.text.trim(),
-                            description:
-                                _descriptionController.text.trim(),
-                            assigneeId: _selectedAssigneeId!,
-                            dueDate: _selectedDate!,
+              onPressed: _isSaving
+                  ? null
+                  : () async {
+                      if (_formKey.currentState!.validate()) {
+                        setState(() => _isSaving = true);
+                        await ref
+                            .read(adminViewModelProvider.notifier)
+                            .assignTask(
+                              title: _titleController.text.trim(),
+                              description:
+                                  _descriptionController.text.trim(),
+                              assigneeId: _selectedAssigneeId!,
+                              dueDate: _selectedDate!,
+                            );
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Task assigned successfully!')),
                           );
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Task assigned successfully!')),
-                        );
-                        Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                        }
                       }
-                    }
-                  : null,
+                    },
             ),
           ],
         ),
+      ),
       ),
     );
   }

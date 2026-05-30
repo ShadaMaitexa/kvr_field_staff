@@ -15,6 +15,7 @@ class AddCompanyScreen extends ConsumerStatefulWidget {
 }
 
 class _AddCompanyScreenState extends ConsumerState<AddCompanyScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   bool _isSaving = false;
 
@@ -29,50 +30,59 @@ class _AddCompanyScreenState extends ConsumerState<AddCompanyScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const BaseAppBar(title: 'Add Company'),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: 'Company Name',
-                labelStyle: AppTextStyles.bodyMedium,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: 'Company Name',
+                  labelStyle: AppTextStyles.bodyMedium,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                    borderSide:
+                        const BorderSide(color: AppColors.teal, width: 2),
+                  ),
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                  borderSide:
-                      const BorderSide(color: AppColors.teal, width: 2),
-                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Please enter a company name';
+                  }
+                  return null;
+                },
               ),
-              onChanged: (_) => setState(() {}),
-            ),
             const SizedBox(height: AppSpacing.xl),
             PrimaryButton(
               label: _isSaving ? 'Adding...' : 'Add Company',
-              onPressed:
-                  (_nameController.text.trim().isNotEmpty && !_isSaving)
-                      ? () async {
-                          setState(() => _isSaving = true);
-                          await ref
-                              .read(superAdminViewModelProvider.notifier)
-                              .addCompany(_nameController.text.trim());
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text(
-                                      'Company added successfully!')),
-                            );
-                            Navigator.of(context).pop();
-                          }
+              onPressed: _isSaving
+                  ? null
+                  : () async {
+                      if (_formKey.currentState!.validate()) {
+                        setState(() => _isSaving = true);
+                        await ref
+                            .read(superAdminViewModelProvider.notifier)
+                            .addCompany(_nameController.text.trim());
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text(
+                                    'Company added successfully!')),
+                          );
+                          Navigator.of(context).pop();
                         }
-                      : null,
+                      }
+                    },
             ),
           ],
         ),
+      ),
       ),
     );
   }
